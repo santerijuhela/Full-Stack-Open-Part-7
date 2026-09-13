@@ -14,6 +14,7 @@ import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 
 import Notification from './components/Notification'
+import ErrorBoundary from './components/ErrorBoundary'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -124,21 +125,29 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={
-          <BlogList blogs={blogs} />
+          <ErrorBoundary>
+            <BlogList blogs={blogs} />
+          </ErrorBoundary>
         } />
         <Route path="/blogs/:id" element={
-          <Blog
+          <ErrorBoundary>
+            <Blog
             blog={blog}
             addLike={addLike}
             currentUser={user}
             removeBlog={removeBlog}
-          />
+            />
+          </ErrorBoundary>
         } />
         <Route path="/login" element={
-          <Login doLogin={doLogin} />
+          <ErrorBoundary>
+            <Login doLogin={doLogin} />
+          </ErrorBoundary>
         } />
         <Route path="/create" element={
-          <BlogForm createBlog={addBlog} />
+          <ErrorBoundary>
+            <BlogForm createBlog={addBlog} />
+          </ErrorBoundary>
         } />
       </Routes>
     </Container>
