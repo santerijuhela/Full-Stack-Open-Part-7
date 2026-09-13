@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 
 import {
-  Routes, Route, Link, useMatch, useNavigate
+  Routes, Route, Link, useMatch, useNavigate, useLocation
 } from 'react-router-dom'
 
 import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
@@ -22,6 +22,7 @@ const App = () => {
   const [notification, setNotification] = useState({ message: null })
 
   const navigation = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
     blogService.getAll().then(blogs => setBlogs(blogs))
@@ -123,33 +124,28 @@ const App = () => {
 
       <Notification notification={notification} />
 
-      <Routes>
-        <Route path="/" element={
-          <ErrorBoundary>
+      <ErrorBoundary key={location.key}>
+        <Routes>
+          <Route path="/" element={
             <BlogList blogs={blogs} />
-          </ErrorBoundary>
-        } />
-        <Route path="/blogs/:id" element={
-          <ErrorBoundary>
+          } />
+          <Route path="/blogs/:id" element={
             <Blog
-            blog={blog}
-            addLike={addLike}
-            currentUser={user}
-            removeBlog={removeBlog}
+              blog={blog}
+              addLike={addLike}
+              currentUser={user}
+              removeBlog={removeBlog}
             />
-          </ErrorBoundary>
-        } />
-        <Route path="/login" element={
-          <ErrorBoundary>
+          } />
+          <Route path="/login" element={
             <Login doLogin={doLogin} />
-          </ErrorBoundary>
-        } />
-        <Route path="/create" element={
-          <ErrorBoundary>
+          } />
+          <Route path="/create" element={
             <BlogForm createBlog={addBlog} />
-          </ErrorBoundary>
-        } />
-      </Routes>
+          } />
+        </Routes>
+      </ErrorBoundary>
+      
     </Container>
   )
 }
