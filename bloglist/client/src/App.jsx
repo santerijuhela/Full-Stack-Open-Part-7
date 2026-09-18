@@ -20,11 +20,12 @@ import BlogForm from './components/BlogForm'
 
 import Notification from './components/Notification'
 import ErrorBoundary from './components/ErrorBoundary'
+import { useNotificationActions } from './stores/notificationStore'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ message: null })
+  const setNotification = useNotificationActions()
 
   const navigation = useNavigate()
   const location = useLocation()
@@ -43,18 +44,11 @@ const App = () => {
     }
   }, [])
 
-  const notifyWith = (message, isError = false) => {
-    setNotification({ message, isError })
-    setTimeout(() => {
-      setNotification({ message: null })
-    }, 25000)
-  }
-
   const addBlog = async (blogObject) => {
     try {
       const createdBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(createdBlog))
-      notifyWith(
+      setNotification(
         `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
       )
       navigation('/')
@@ -77,7 +71,7 @@ const App = () => {
     try {
       await blogService.remove(blog.id)
       setBlogs(blogs.filter((b) => b.id !== blog.id))
-      notifyWith(`Blog ${blog.title} by ${blog.author} removed`)
+      setNotification(`Blog ${blog.title} by ${blog.author} removed`)
       navigation('/')
     } catch (error) {
       console.log('Error while trying to delete a blog', error)
@@ -93,7 +87,7 @@ const App = () => {
       setUser(user)
       navigation('/')
     } catch {
-      notifyWith('wrong username or password', true)
+      setNotification('wrong username or password', true)
       console.log('wrong credentials')
     }
   }
@@ -153,7 +147,7 @@ const App = () => {
         </Toolbar>
       </AppBar>
 
-      <Notification notification={notification} />
+      <Notification />
 
       <ErrorBoundary key={location.key}>
         <Routes>
