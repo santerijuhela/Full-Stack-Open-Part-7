@@ -1,18 +1,34 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { TextField, Button, Stack } from '@mui/material'
+import { useBlogActions } from '../stores/blogStore'
+import { useNotificationActions } from '../stores/notificationStore'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = () => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const handleCreateNew = (event) => {
+  const { createBlog } = useBlogActions()
+  const setNotification = useNotificationActions()
+  const navigate = useNavigate()
+
+  const handleCreateNew = async (event) => {
     event.preventDefault()
-    createBlog({ title, author, url })
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+    try {
+      const createdBlog = await createBlog({ title, author, url })
+      setNotification(
+        `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
+      )
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+      navigate('/')
+    } catch (error) {
+      setNotification('Creating the blog failed', true)
+      console.log('Creating new blog failed:', error)
+    }
   }
 
   return (

@@ -1,13 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import {
-  Routes,
-  Route,
-  Link,
-  useMatch,
-  useNavigate,
-  useLocation,
-} from 'react-router-dom'
+import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'
 
 import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
 
@@ -21,9 +14,10 @@ import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useNotificationActions } from './stores/notificationStore'
+import { useBlogActions } from './stores/blogStore'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const { initialize } = useBlogActions()
   const [user, setUser] = useState(null)
   const setNotification = useNotificationActions()
 
@@ -31,8 +25,8 @@ const App = () => {
   const location = useLocation()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs))
-  }, [])
+    initialize()
+  }, [initialize])
 
   useEffect(() => {
     const userJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -43,19 +37,6 @@ const App = () => {
       setUser(user)
     }
   }, [])
-
-  const addBlog = async (blogObject) => {
-    try {
-      const createdBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(createdBlog))
-      setNotification(
-        `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
-      )
-      navigation('/')
-    } catch (error) {
-      console.log('Creating new blog failed:', error)
-    }
-  }
 
   const addLike = async (blog) => {
     const newBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
@@ -97,9 +78,6 @@ const App = () => {
     setUser(null)
     navigation('/')
   }
-
-  const match = useMatch('/blogs/:id')
-  const blog = match ? blogs.find((b) => b.id === match.params.id) : null
 
   return (
     <Container>
@@ -151,12 +129,11 @@ const App = () => {
 
       <ErrorBoundary key={location.key}>
         <Routes>
-          <Route path="/" element={<BlogList blogs={blogs} />} />
+          <Route path="/" element={<BlogList />} />
           <Route
             path="/blogs/:id"
             element={
               <Blog
-                blog={blog}
                 addLike={addLike}
                 currentUser={user}
                 removeBlog={removeBlog}
@@ -164,7 +141,7 @@ const App = () => {
             }
           />
           <Route path="/login" element={<Login doLogin={doLogin} />} />
-          <Route path="/create" element={<BlogForm createBlog={addBlog} />} />
+          <Route path="/create" element={<BlogForm />} />
           <Route path="/*" element={<h1>404 - Page not found</h1>} />
         </Routes>
       </ErrorBoundary>

@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useBlogs } from '../stores/blogStore'
+import { useParams } from 'react-router-dom'
 import {
   Card,
   CardContent,
@@ -13,8 +15,11 @@ import {
   DialogActions,
 } from '@mui/material'
 
-const Blog = ({ blog, addLike, currentUser, removeBlog }) => {
+const Blog = ({ addLike, currentUser, removeBlog }) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const id = useParams().id
+  const blogs = useBlogs()
+  const blog = blogs.find((blog) => blog.id === id)
 
   if (!blog) {
     return null
