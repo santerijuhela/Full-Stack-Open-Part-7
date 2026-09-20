@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { useBlogs } from '../stores/blogStore'
-import { useParams } from 'react-router-dom'
+import { useBlogs, useBlogActions } from '../stores/blogStore'
+import { useNotificationActions } from '../stores/notificationStore'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   Card,
   CardContent,
@@ -15,10 +16,13 @@ import {
   DialogActions,
 } from '@mui/material'
 
-const Blog = ({ addLike, currentUser, removeBlog }) => {
+const Blog = ({ currentUser }) => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const id = useParams().id
+  const navigate = useNavigate()
   const blogs = useBlogs()
+  const { addLike, removeBlog } = useBlogActions()
+  const setNotification = useNotificationActions()
   const blog = blogs.find((blog) => blog.id === id)
 
   if (!blog) {
@@ -28,9 +32,25 @@ const Blog = ({ addLike, currentUser, removeBlog }) => {
   const canBeRemoved = () =>
     currentUser && currentUser.username === blog.user.username
 
-  const handleRemove = () => {
-    removeBlog(blog)
-    setConfirmOpen(false)
+  const handleRemove = async () => {
+    try {
+      await removeBlog(blog)
+      setConfirmOpen(false)
+      setNotification(`Blog ${blog.title} by ${blog.author} removed`)
+      navigate('/')
+    } catch (error) {
+      setNotification('Error while trying to delete blog', true)
+      console.log('Error while trying to delete blog', error)
+    }
+  }
+
+  const handleLike = async () => {
+    try {
+      await addLike(blog)
+    } catch (error) {
+      setNotification('Error while trying to like the blog', true)
+      console.log('Error while trying to like the blog', error)
+    }
   }
 
   return (
@@ -60,11 +80,7 @@ const Blog = ({ addLike, currentUser, removeBlog }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
           <Typography variant="body1">{blog.likes} likes</Typography>
           {currentUser && (
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => addLike(blog)}
-            >
+            <Button size="small" variant="outlined" onClick={handleLike}>
               like
             </Button>
           )}

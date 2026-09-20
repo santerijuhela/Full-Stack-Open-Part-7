@@ -38,27 +38,6 @@ const App = () => {
     }
   }, [])
 
-  const addLike = async (blog) => {
-    const newBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id }
-    try {
-      const updatedBlog = await blogService.update(newBlog)
-      setBlogs(blogs.map((b) => (b.id === blog.id ? updatedBlog : b)))
-    } catch (error) {
-      console.log('Error while trying to like a blog:', error)
-    }
-  }
-
-  const removeBlog = async (blog) => {
-    try {
-      await blogService.remove(blog.id)
-      setBlogs(blogs.filter((b) => b.id !== blog.id))
-      setNotification(`Blog ${blog.title} by ${blog.author} removed`)
-      navigation('/')
-    } catch (error) {
-      console.log('Error while trying to delete a blog', error)
-    }
-  }
-
   const doLogin = async ({ username, password }) => {
     try {
       const user = await loginService.login({ username, password })
@@ -130,16 +109,7 @@ const App = () => {
       <ErrorBoundary key={location.key}>
         <Routes>
           <Route path="/" element={<BlogList />} />
-          <Route
-            path="/blogs/:id"
-            element={
-              <Blog
-                addLike={addLike}
-                currentUser={user}
-                removeBlog={removeBlog}
-              />
-            }
-          />
+          <Route path="/blogs/:id" element={<Blog currentUser={user} />} />
           <Route path="/login" element={<Login doLogin={doLogin} />} />
           <Route path="/create" element={<BlogForm />} />
           <Route path="/*" element={<h1>404 - Page not found</h1>} />
