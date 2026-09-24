@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 
 import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom'
 
@@ -6,20 +6,18 @@ import { Container, AppBar, Toolbar, Button, Typography } from '@mui/material'
 
 import BlogList from './components/BlogList'
 import Login from './components/Login'
-import blogService from './services/blogs'
-import loginService from './services/login'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
 
 import Notification from './components/Notification'
 import ErrorBoundary from './components/ErrorBoundary'
-import { useNotificationActions } from './stores/notificationStore'
 import { useBlogActions } from './stores/blogStore'
+import { useUser, useUserActions } from './stores/userStore'
 
 const App = () => {
   const { initialize } = useBlogActions()
-  const [user, setUser] = useState(null)
-  const setNotification = useNotificationActions()
+  const { initializeUser, logout } = useUserActions()
+  const user = useUser()
 
   const navigation = useNavigate()
   const location = useLocation()
@@ -29,32 +27,11 @@ const App = () => {
   }, [initialize])
 
   useEffect(() => {
-    const userJSON = window.localStorage.getItem('loggedBlogappUser')
-    const user = JSON.parse(userJSON)
-
-    if (user) {
-      blogService.setToken(user.token)
-      setUser(user)
-    }
-  }, [])
-
-  const doLogin = async ({ username, password }) => {
-    try {
-      const user = await loginService.login({ username, password })
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      setUser(user)
-      navigation('/')
-    } catch {
-      setNotification('wrong username or password', true)
-      console.log('wrong credentials')
-    }
-  }
+    initializeUser()
+  }, [initializeUser])
 
   const handleLogout = async () => {
-    window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    logout()
     navigation('/')
   }
 
@@ -109,8 +86,8 @@ const App = () => {
       <ErrorBoundary key={location.key}>
         <Routes>
           <Route path="/" element={<BlogList />} />
-          <Route path="/blogs/:id" element={<Blog currentUser={user} />} />
-          <Route path="/login" element={<Login doLogin={doLogin} />} />
+          <Route path="/blogs/:id" element={<Blog />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/create" element={<BlogForm />} />
           <Route path="/*" element={<h1>404 - Page not found</h1>} />
         </Routes>

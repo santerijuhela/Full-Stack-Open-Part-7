@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useBlogs, useBlogActions } from '../stores/blogStore'
 import { useNotificationActions } from '../stores/notificationStore'
+import { useUser } from '../stores/userStore'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Card,
@@ -16,7 +17,7 @@ import {
   DialogActions,
 } from '@mui/material'
 
-const Blog = ({ currentUser }) => {
+const Blog = () => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const id = useParams().id
   const navigate = useNavigate()
@@ -24,6 +25,7 @@ const Blog = ({ currentUser }) => {
   const { addLike, removeBlog } = useBlogActions()
   const setNotification = useNotificationActions()
   const blog = blogs.find((blog) => blog.id === id)
+  const currentUser = useUser()
 
   if (!blog) {
     return null

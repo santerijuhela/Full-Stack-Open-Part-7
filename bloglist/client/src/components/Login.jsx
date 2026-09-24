@@ -1,19 +1,27 @@
 import { useState } from 'react'
+import { useUserActions } from '../stores/userStore'
+import { useNavigate } from 'react-router-dom'
+import { useNotificationActions } from '../stores/notificationStore'
 
 import { FormControl, Input, Button, InputLabel } from '@mui/material'
 
-const Login = ({ doLogin }) => {
+const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const { login } = useUserActions()
+  const setNotification = useNotificationActions()
+  const navigate = useNavigate()
 
   const handleLogin = async (event) => {
     event.preventDefault()
 
     try {
-      await doLogin({ username, password })
+      await login({ username, password })
       setUsername('')
       setPassword('')
+      navigate('/')
     } catch (e) {
+      setNotification('wrong username or password', true)
       console.log(e)
       console.log('wrong credentials')
     }
