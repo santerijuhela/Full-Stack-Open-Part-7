@@ -14,8 +14,12 @@ jobs:
         with:
           node-version: 24
 
-      - name: Install app dependencies
-        working-directory: bloglist
+      - name: Install frontend dependencies
+        working-directory: bloglist/client
+        run: npm ci
+
+      - name: Install backend dependencies
+        working-directory: bloglist/server
         run: npm ci
 
       - name: Install test dependencies
