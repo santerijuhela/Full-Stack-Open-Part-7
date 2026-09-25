@@ -13,6 +13,7 @@ import Notification from './components/Notification'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useBlogActions } from './stores/blogStore'
 import { useUser, useUserActions } from './stores/userStore'
+import UserList from './components/UserList'
 
 const App = () => {
   const { initialize } = useBlogActions()
@@ -49,6 +50,14 @@ const App = () => {
             sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
           >
             blogs
+          </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/users"
+            sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' } }}
+          >
+            users
           </Button>
           {!user ? (
             <Button
@@ -89,6 +98,7 @@ const App = () => {
           <Route path="/blogs/:id" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/create" element={<BlogForm />} />
+          <Route path="/users" element={<UserList />} />
           <Route path="/*" element={<h1>404 - Page not found</h1>} />
         </Routes>
       </ErrorBoundary>
