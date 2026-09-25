@@ -1,9 +1,8 @@
 import { useUsers, useUsersActions } from '../stores/usersStore'
-import { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 const UserList = () => {
   const users = useUsers()
-  const { initializeUsers } = useUsersActions()
 
   const tableStyle = {
     padding: '20px',
@@ -15,10 +14,6 @@ const UserList = () => {
     textAlign: 'left',
     borderBottom: '1px solid',
   }
-
-  useEffect(() => {
-    initializeUsers()
-  }, [initializeUsers])
 
   return (
     <div>
@@ -34,7 +29,9 @@ const UserList = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td style={cellStyle}>{user.name}</td>
+              <td style={cellStyle}>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
               <td style={cellStyle}>{user.username}</td>
               <td style={cellStyle}>{user.blogs.length}</td>
             </tr>

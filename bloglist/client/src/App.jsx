@@ -13,11 +13,14 @@ import Notification from './components/Notification'
 import ErrorBoundary from './components/ErrorBoundary'
 import { useBlogActions } from './stores/blogStore'
 import { useUser, useUserActions } from './stores/userStore'
+import { useUsersActions } from './stores/usersStore'
 import UserList from './components/UserList'
+import User from './components/User'
 
 const App = () => {
   const { initialize } = useBlogActions()
   const { initializeUser, logout } = useUserActions()
+  const { initializeUsers } = useUsersActions()
   const user = useUser()
 
   const navigation = useNavigate()
@@ -30,6 +33,10 @@ const App = () => {
   useEffect(() => {
     initializeUser()
   }, [initializeUser])
+
+  useEffect(() => {
+    initializeUsers()
+  }, [initializeUsers])
 
   const handleLogout = async () => {
     logout()
@@ -99,6 +106,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/create" element={<BlogForm />} />
           <Route path="/users" element={<UserList />} />
+          <Route path="/users/:id" element={<User />} />
           <Route path="/*" element={<h1>404 - Page not found</h1>} />
         </Routes>
       </ErrorBoundary>
