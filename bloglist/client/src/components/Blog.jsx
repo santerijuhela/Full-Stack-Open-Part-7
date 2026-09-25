@@ -97,6 +97,14 @@ const Blog = () => {
             </Button>
           )}
         </Box>
+        <div>
+          <h3>comments</h3>
+          <ul>
+            {blog.comments.map((comment, index) => (
+              <li key={`${blog.id}-${index}`}>{comment}</li>
+            ))}
+          </ul>
+        </div>
       </CardContent>
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
