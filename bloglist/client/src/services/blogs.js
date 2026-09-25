@@ -25,10 +25,16 @@ const update = (newObject) => {
     .then((response) => response.data)
 }
 
+const comment = (id, content) => {
+  return axios
+    .post(`${baseUrl}/${id}/comments`, { comment: content })
+    .then((response) => response.data)
+}
+
 const remove = (id) => {
   return axios
     .delete(`${baseUrl}/${id}`, getConfig())
     .then((response) => response.data)
 }
 
-export default { create, getAll, setToken, update, remove }
+export default { create, getAll, setToken, update, comment, remove }

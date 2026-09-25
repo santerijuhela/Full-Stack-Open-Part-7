@@ -19,10 +19,11 @@ import {
 
 const Blog = () => {
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [comment, setComment] = useState('')
   const id = useParams().id
   const navigate = useNavigate()
   const blogs = useBlogs()
-  const { addLike, removeBlog } = useBlogActions()
+  const { addLike, addComment, removeBlog } = useBlogActions()
   const setNotification = useNotificationActions()
   const blog = blogs.find((blog) => blog.id === id)
   const currentUser = useUser()
@@ -52,6 +53,17 @@ const Blog = () => {
     } catch (error) {
       setNotification('Error while trying to like the blog', true)
       console.log('Error while trying to like the blog', error)
+    }
+  }
+
+  const handleComment = async (event) => {
+    event.preventDefault()
+    try {
+      await addComment(blog, comment)
+      setComment('')
+    } catch (error) {
+      setNotification('Adding comment failed', true)
+      console.log('Adding comment failed', error)
     }
   }
 
@@ -99,6 +111,13 @@ const Blog = () => {
         </Box>
         <div>
           <h3>comments</h3>
+          <form onSubmit={handleComment}>
+            <input
+              type="text"
+              onChange={({ target }) => setComment(target.value)}
+            />
+            <button type="submit">add comment</button>
+          </form>
           <ul>
             {blog.comments.map((comment, index) => (
               <li key={`${blog.id}-${index}`}>{comment}</li>
