@@ -4,17 +4,25 @@ import { useNotificationActions } from '../stores/notificationStore'
 import { useUser } from '../stores/userStore'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
+  Avatar,
   Card,
   CardContent,
   Typography,
   Button,
   Box,
+  Divider,
   Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
+  TextField,
+  Stack,
 } from '@mui/material'
 
 const Blog = () => {
@@ -109,21 +117,39 @@ const Blog = () => {
             </Button>
           )}
         </Box>
-        <div>
-          <h3>comments</h3>
-          <form onSubmit={handleComment}>
-            <input
-              type="text"
+        <Typography variant="h6" gutterBottom sx={{ mt: 4, mb: 1 }}>
+          Comments ({blog.comments.length})
+        </Typography>
+
+        <form onSubmit={handleComment}>
+          <Stack direction="row" spacing={2}>
+            <TextField
+              label="add a comment"
+              size="small"
+              value={comment}
               onChange={({ target }) => setComment(target.value)}
             />
-            <button type="submit">add comment</button>
-          </form>
-          <ul>
+            <Button type="submit" variant="contained">
+              add comment
+            </Button>
+          </Stack>
+        </form>
+        {blog.comments.length === 0 ? (
+          <Typography color="text.secondary" sx={{ py: 2 }}>
+            No comments yet.
+          </Typography>
+        ) : (
+          <List disablePadding>
             {blog.comments.map((comment, index) => (
-              <li key={`${blog.id}-${index}`}>{comment}</li>
+              <ListItem key={`${blog.id}-${index}`} divider>
+                <ListItemAvatar>
+                  <Avatar>{index + 1}</Avatar>
+                </ListItemAvatar>
+                <ListItemText primary={comment} />
+              </ListItem>
             ))}
-          </ul>
-        </div>
+          </List>
+        )}
       </CardContent>
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
